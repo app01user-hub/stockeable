@@ -1,0 +1,42 @@
+{
+    "ALIM-001": {
+        "codigo": "ALIM-001",
+        "descripcion": "Leche Entera 1L",
+        "cantidad": 120,
+        "stock_inicial": 120,
+        "precio_costo": 80.0,
+        "ganancia": 25.0,
+        "precio_venta": 100.0,
+        "familia": "Alimentos"
+    },
+    "ALIM-002": {
+        "codigo": "ALIM-002",
+        "descripcion": "Yerba Mate 1Kg",
+        "cantidad": 45,
+        "stock_inicial": 45,
+        "precio_costo": 300.0,
+        "ganancia": 33.33,
+        "precio_venta": 400.0,
+        "familia": "Alimentos"
+    },
+    "LIM-001": {
+        "codigo": "LIM-001",
+        "descripcion": "Lavandina Clásica 2L",
+        "cantidad": 60,
+        "stock_inicial": 60,
+        "precio_costo": 120.0,
+        "ganancia": 50.0,
+        "precio_venta": 180.0,
+        "familia": "Limpieza"
+    },
+    "INSU-001": {
+        "codigo": "INSU-001",
+        "descripcion": "Pipeta 1",
+        "cantidad": 0,
+        "stock_inicial": 0,
+        "precio_costo": 1000.0,
+        "ganancia": 30.0,
+        "precio_venta": 1300.0,
+        "familia": "Insumos"
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "movimientos": [
+        {
+            "id": "MOV-0001",
+            "fecha": "2026-09-18",
+            "tipo": "EGRESO",
+            "monto": -60000.0,
+            "medio_pago": "efectivo",
+            "concepto": "Pago CC Proveedor PROV-B (Pago total RE-0002 PROV-B)",
+            "usuario": "admin"
+        },
+        {
+            "id": "MOV-0002",
+            "fecha": "2026-10-07",
+            "tipo": "EGRESO",
+            "monto": -30000.0,
+            "medio_pago": "efectivo",
+            "concepto": "Pago CC Proveedor PROV-A (Pago s/Comprobante)",
+            "usuario": "superadmin"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "PROV-001": {
+        "id": "PROV-001",
+        "nombre": "Distribuidora Alimenticia S.A.",
+        "contacto": "Carlos Méndez",
+        "telefono": "4888-0001"
+    },
+    "PROV-002": {
+        "id": "PROV-002",
+        "nombre": "Distribuidora Mascotas S.A.",
+        "contacto": "",
+        "telefono": "",
+        "email": ""
+    },
+    "PROV-A": {
+        "id": "PROV-A",
+        "nombre": "Veterinaria Alfa S.R.L.",
+        "contacto": "",
+        "telefono": "",
+        "email": ""
+    },
+    "PROV-B": {
+        "id": "PROV-B",
+        "nombre": "Distribuidora Beta S.A.",
+        "contacto": "",
+        "telefono": "",
+        "email": ""
+    }
+}

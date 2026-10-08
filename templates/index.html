@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockDocente v2.0 - Entorno Comercial Adaptable</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --theme-primary: #4f46e5;
+            --theme-primary-hover: #4338ca;
+            --theme-primary-light: #e0e7ff;
+            --theme-accent: #6366f1;
+        }
+        .bg-theme-primary { background-color: var(--theme-primary); }
+        .bg-theme-hover:hover { background-color: var(--theme-primary-hover); }
+        .bg-theme-light { background-color: var(--theme-primary-light); }
+        .text-theme-primary { color: var(--theme-primary); }
+        .border-theme-primary { border-color: var(--theme-primary); }
+        .focus-theme-ring:focus { --tw-ring-color: var(--theme-primary); border-color: var(--theme-primary); }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased text-slate-800">
+
+    <!-- 1. PANTALLA DE LOGIN (SE MUESTRA SI NO HAY SESIÓN) -->
+    <!-- ================================================================= -->
+    <div id="pantalla-login" class="{% if sesion %}hidden{% endif %} flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 bg-slate-900">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+            <span class="text-6xl text-amber-400 block mb-3 animate-bounce"><i class="fa-solid fa-graduation-cap"></i></span>
+            <h2 class="text-3xl font-extrabold text-white tracking-tight">StockDocente v2.0</h2>
+            <p class="mt-2 text-sm text-slate-400">Entorno Corporativo de Control de Stock, Cartera de Clientes y Finanzas</p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow-2xl rounded-2xl border border-slate-700 sm:px-10">
+                <form id="form-login" onsubmit="ejecutarLogin(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700">Usuario de Acceso</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-user text-slate-400"></i>
+                            </div>
+                            <input id="login-user" required type="text" placeholder="admin / vendedor / cliente1 / superadmin" class="pl-10 block w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700">Contraseña</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-lock text-slate-400"></i>
+                            </div>
+                            <input id="login-pass" required type="password" placeholder="••••••••" class="pl-10 block w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                        Ingresar de Forma Segura <i class="fa-solid fa-arrow-right-to-bracket ml-2 mt-0.5"></i>
+                    </button>
+                </form>
+
+                <!-- START_MODULE: master -->
+                <div class="mt-6 border-t pt-4">
+                    <p class="text-xs font-black text-slate-500 mb-3 text-center uppercase tracking-wide">
+                        ⚡ Ingreso Rápido de Laboratorio (1-Clic):
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button type="button" onclick="loginRapidoRol('superadmin')" class="p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl text-amber-900 font-bold text-left transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-user-shield text-amber-600 text-lg"></i>
+                            <div>
+                                <span class="block font-black">superadmin</span>
+                                <span class="text-[9px] text-amber-700 font-bold block">Desarrollador Master</span>
+                            </div>
+                        </button>
+                        <button type="button" onclick="loginRapidoRol('admin')" class="p-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-300 rounded-xl text-indigo-900 font-bold text-left transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-user-gear text-indigo-600 text-lg"></i>
+                            <div>
+                                <span class="block font-black">admin</span>
+                                <span class="text-[9px] text-indigo-700 font-bold block">Control de Negocio</span>
+                            </div>
+                        </button>
+                        <button type="button" onclick="loginRapidoRol('vendedor')" class="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl text-emerald-900 font-bold text-left transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-cash-register text-emerald-600 text-lg"></i>
+                            <div>
+                                <span class="block font-black">vendedor</span>
+                                <span class="text-[9px] text-emerald-700 font-bold block">Facturación Salón</span>
+                            </div>
+                        </button>
+                        <button type="button" onclick="loginRapidoRol('cliente')" class="p-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-slate-900 font-bold text-left transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-user-tag text-slate-600 text-lg"></i>
+                            <div>
+                                <span class="block font-black">cliente1</span>
+                                <span class="text-[9px] text-slate-600 font-bold block">Portal E-Commerce</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <!-- END_MODULE: master -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 2. INTERFAZ PRINCIPAL DE LA APP -->
+    <!-- ================================================================= -->
+    <div id="pantalla-app" class="{% if not sesion %}hidden{% endif %} flex flex-col h-full">
+        <!-- BARRA SUPERIOR DE ACCESOS -->
+        <header class="bg-slate-900 text-white shadow-md no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+                <!-- Branding configurable en tiempo real -->
+                <div class="flex items-center space-x-3">
+                    <span id="branding-logo" class="text-3xl cursor-pointer hover:scale-110 transition select-none" onclick="abrirModalBranding()">{{ config.logo_emoji }}</span>
+                    <div>
+                        <h1 id="branding-nombre" class="font-extrabold text-lg tracking-tight text-white uppercase cursor-pointer hover:underline" onclick="abrirModalBranding()">{{ config.nombre_negocio }}</h1>
+                        <p class="text-[10px] tracking-wide text-slate-400 font-bold">Mapeo de Flujo Comercial Escolar • v2.0</p>
+                    </div>
+                </div>
+
+                <!-- Perfil y Control de Sesión -->
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <span id="sesion-usr-nombre" class="block font-bold text-sm text-indigo-200">{% if sesion %}{{ sesion.nombre }}{% endif %}</span>
+                        <span id="sesion-usr-rol" class="text-[10px] bg-slate-800 text-indigo-400 py-0.5 px-2 rounded-full font-extrabold tracking-wide uppercase border border-slate-700">{% if sesion %}{{ sesion.rol }}{% endif %}</span>
+                    </div>
+                    
+                    <button onclick="abrirModalPerfil()" class="text-slate-300 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition" title="Configurar Perfil">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </button>
+                    
+                    <button onclick="ejecutarLogout()" class="bg-red-600/90 hover:bg-red-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-md shadow-red-900/30">
+                        <i class="fa-solid fa-power-off"></i> <span class="hidden md:inline">Salir</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- PANEL DE NAVEGACIÓN PRINCIPAL (PESTAÑAS) -->
+        <nav class="bg-slate-800 border-b border-slate-700 shadow-inner no-print">
+            <div class="max-w-7xl mx-auto px-4 flex flex-wrap gap-1.5 py-2">
+                <!-- START_MODULE: remitos -->
+                {% if config.modulos_activos.ventas or config.modulos_activos.compras or config.modulos_activos.stock %}
+                <button id="btn-tab-remito" onclick="cambiarPestana('remito')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-receipt mr-1.5"></i>Ingreso o Carga de Comprobantes
+                </button>
+                {% endif %}
+                <!-- END_MODULE: remitos -->
+
+                <!-- START_MODULE: stock -->
+                {% if config.modulos_activos.stock %}
+                <button id="btn-tab-stock" onclick="cambiarPestana('stock')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-boxes-stacked mr-1.5"></i>Stock
+                </button>
+                {% endif %}
+                <!-- END_MODULE: stock -->
+
+                <!-- START_MODULE: ventas -->
+                {% if config.modulos_activos.ventas %}
+                <button id="btn-tab-clientes" onclick="cambiarPestana('clientes')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-users mr-1.5"></i>Clientes
+                </button>
+                {% endif %}
+                <!-- END_MODULE: ventas -->
+
+                <!-- START_MODULE: compras -->
+                {% if config.modulos_activos.compras %}
+                <button id="btn-tab-proveedores" onclick="cambiarPestana('proveedores')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-truck-moving mr-1.5"></i>Proveedores
+                </button>
+                {% endif %}
+                <!-- END_MODULE: compras -->
+
+                <!-- START_MODULE: pagos -->
+                {% if config.modulos_activos.cc_clientes or config.modulos_activos.cc_proveedores %}
+                <button id="btn-tab-cc" onclick="cambiarPestana('cc')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-scale-balanced mr-1.5"></i>Cuentas Corrientes
+                </button>
+                {% endif %}
+                <!-- END_MODULE: pagos -->
+
+                <!-- START_MODULE: informes -->
+                {% if config.modulos_activos.informes %}
+                <button id="btn-tab-informes" onclick="cambiarPestana('informes')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i>Reportes
+                </button>
+                {% endif %}
+                <!-- END_MODULE: informes -->
+
+                <!-- START_MODULE: caja -->
+                {% if config.modulos_activos.caja %}
+                <button id="btn-tab-caja" onclick="cambiarPestana('caja')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm">
+                    <i class="fa-solid fa-cash-register mr-1.5"></i>Control & Flujo de Caja
+                </button>
+                {% endif %}
+                <!-- END_MODULE: caja -->
+
+                <!-- START_MODULE: carrito -->
+                {% if config.modulos_activos.carrito %}
+                <button id="btn-tab-carrito" onclick="cambiarPestana('carrito')" class="tab-btn px-4 py-2 rounded-md font-medium text-slate-200 hover:bg-slate-600 transition text-sm hidden">
+                    <i class="fa-solid fa-cart-shopping mr-1.5"></i>Catálogo & Carrito <span id="cart-badge" class="bg-red-500 text-white rounded-full text-[10px] px-1.5 py-0.5 ml-1 hidden">0</span>
+                </button>
+                {% endif %}
+                <!-- END_MODULE: carrito -->
+
+                <!-- PANEL MASTER SÓLO PARA EL SUPERADMIN -->
+                <!-- START_MODULE: master -->
+                <button id="btn-tab-master" onclick="cambiarPestana('master')" class="tab-btn px-4 py-2 rounded-md font-extrabold text-amber-500 hover:bg-amber-500/10 hover:text-amber-400 border border-amber-500/30 transition text-sm hidden">
+                    <i class="fa-solid fa-fingerprint mr-1.5 animate-pulse"></i>Panel Master (Nosotros)
+                </button>
+                <!-- END_MODULE: master -->
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 space-y-6">
+            
+            <!-- ================= PESTAÑA FACTURACIÓN WYSIWYG ================= -->
+            <!-- START_MODULE: remitos -->
+            {% if config.modulos_activos.ventas or config.modulos_activos.compras or config.modulos_activos.stock %}
+            <div id="tab-remito" class="pestana-contenido hidden space-y-6">
+                <!-- Papel interactivo WYSIWYG ocupando el 100% de la visual -->
+                <div class="bg-slate-300 p-4 sm:p-8 rounded-2xl shadow-xl flex justify-center border border-slate-400">
+                    <div class="bg-white max-w-[850px] w-full p-6 sm:p-10 rounded-md shadow-2xl relative border-2 border-slate-400/50 flex flex-col justify-between min-h-[850px]">
+                        
+                        <!-- MARCA DE AGUA DIDACTICA -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none z-0">
+                            <span class="text-7xl font-extrabold rotate-45 border-8 border-red-500 p-4 text-red-500 tracking-wider">EJERCICIO ESCOLAR</span>
+                        </div>
+
+                        <div class="z-10 space-y-6">
+                            <!-- ENCABEZADO WYSIWYG DIRECTO -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b-2 border-slate-800 pb-4">
+                                <div class="space-y-1.5">
+                                    <!-- Logotipo y Nombre Editables Inline para Administradores -->
+                                    <div class="flex items-center space-x-2">
+                                        <span id="remito-papel-logo-emoji" class="brand-emoji-print text-4xl select-none cursor-pointer hover:scale-110 transition" onclick="abrirModalBranding()">{{ config.logo_emoji }}</span>
+                                        <h3 class="text-2xl font-black text-slate-800 tracking-tight cursor-pointer hover:underline" id="remito-brand-name" onclick="abrirModalBranding()">{{ config.nombre_negocio }}</h3>
+                                    </div>
+                                    <p id="remito-brand-subtitulo" class="text-xs text-slate-500 font-bold">{{ config.subtitulo_negocio|default('Distribuidor Comercial Multi-Rubro Modular') }}</p>
+                                    <p id="remito-brand-domicilio" class="text-[10px] text-slate-400">{{ config.domicilio_negocio|default('Domicilio Comercial de Práctica 123 • Buenos Aires • CUIT 30-12345678-9') }}</p>
+                                </div>
+                                
+                                <div class="text-left md:text-right flex flex-col justify-between items-start md:items-end space-y-2">
+                                    <!-- Selectores Dinámicos de Tipo de Documento y Operación -->
+                                    <div class="flex flex-wrap gap-1.5 md:justify-end">
+                                        <!-- Tipo de Documento (Presupuesto, Pedido, Remito) -->
+                                        <select id="doc-tipo-comprobante" onchange="actualizarTipoComprobante()" class="border-2 border-slate-700 bg-white font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wider text-slate-800 cursor-pointer shadow">
+                                            <option value="presupuestos" selected>Presupuesto</option>
+                                            <option value="pedidos">Pedido</option>
+                                            <option value="remitos">Remito</option>
+                                        </select>
+                                        <!-- Operación (Venta / Compra) -->
+                                        <select id="remito-tipo-op" onchange="actualizarTipoOperacion()" class="border-2 border-slate-700 bg-white font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wider text-slate-800 cursor-pointer shadow">
+                                            <option value="VENTA" selected>Venta (Cliente)</option>
+                                            <!-- START_MODULE: compras -->
+                                            <option value="COMPRA">Compra (Proveedor)</option>
+                                            <!-- END_MODULE: compras -->
+                                        </select>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-600 text-left md:text-right w-full space-y-1 bg-slate-50 p-2.5 rounded-lg border">
+                                        <!-- Número de Comprobante / Folio (Editable si es Remito de Compra) -->
+                                        <div class="flex md:justify-end items-center gap-1">
+                                            <span class="font-bold">Nº Folio:</span>
+                                            <input type="text" id="documento-numero-input" class="border bg-white rounded px-1.5 py-0.5 text-center font-bold text-slate-800 max-w-[120px] text-xs h-6 focus:ring-1 focus:ring-slate-500" placeholder="REM-0001" readonly>
+                                        </div>
+                                        <!-- Fecha del Comprobante -->
+                                        <div class="flex md:justify-end items-center gap-1">
+                                            <span class="font-bold">Fecha:</span>
+                                            <input type="date" id="remito-fecha" class="border bg-white rounded px-1.5 py-0.5 text-center font-bold text-slate-800 text-[10px] h-6 cursor-pointer focus:ring-1 focus:ring-slate-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN DE IDENTIDAD Y AUTOCOMPLETADO DENTRO DEL DOCUMENTO -->
+                            <div class="bg-slate-50 p-4 rounded-xl border-2 border-slate-200 relative">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Input de Búsqueda del Contacto (Razón Social) -->
+                                    <div class="relative">
+                                        <label id="remito-contacto-rol" class="block text-[10px] font-black text-slate-400 mb-1 uppercase">DATOS DEL CLIENTE</label>
+                                        <div class="relative rounded-md shadow-sm">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fa-solid fa-address-card text-slate-400 text-xs"></i>
+                                            </div>
+                                            <input type="text" id="documento-contacto-nombre" oninput="buscarContactoInline()" placeholder="Comience a escribir nombre o Razón Social..." class="pl-8 block w-full border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-700 focus:ring-indigo-500">
+                                        </div>
+                                        <!-- Lista flotante de sugerencias -->
+                                        <div id="documento-contacto-suggest" class="absolute hidden left-0 right-0 mt-1 bg-white border border-slate-300 shadow-2xl rounded-lg z-50 max-h-48 overflow-y-auto text-xs font-semibold text-slate-700 divide-y">
+                                            <!-- Dinámico -->
+                                        </div>
+                                    </div>
+                                    <!-- Historial en segundo plano del contacto seleccionado -->
+                                    <div class="bg-white p-3 rounded-lg border text-[10px] flex flex-col justify-between">
+                                        <div>
+                                            <span class="font-black text-slate-400 block mb-1 uppercase"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Comprobantes Anteriores</span>
+                                            <div id="documento-historial-comprobantes" class="space-y-1 font-mono font-bold max-h-[55px] overflow-y-auto">
+                                                <span class="text-slate-400 italic">No se ha seleccionado ningún contacto aún.</span>
+                                            </div>
+                                        </div>
+                                        <!-- Acciones Inline de Creación Rápida de Contacto -->
+                                        <div id="documento-contacto-crear-accion" class="hidden text-right pt-2 border-t mt-2">
+                                            <span class="text-red-500 font-bold mr-2 text-[9px]">⚠️ No registrado en base de datos.</span>
+                                            <button onclick="guardarContactoInlineRapido()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-2.5 rounded text-[9px] transition inline-flex items-center gap-1"><i class="fa-solid fa-user-plus"></i>Registrar Inline</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TABLA DE DETALLES INTERACTIVOS (WYSIWYG EDITABLE) -->
+                            <div class="bg-white rounded-xl border overflow-hidden shadow-inner">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-100 text-slate-600 font-black uppercase tracking-wider text-[10px] border-b-2">
+                                            <th class="py-3 px-4 w-28">Código</th>
+                                            <th class="py-3 px-4">Descripción / Producto</th>
+                                            <th class="py-3 px-4 text-center w-24">Cantidad</th>
+                                            <th class="py-3 px-4 text-right w-28">P. Unitario ($)</th>
+                                            <th class="py-3 px-4 text-right w-28">Importe ($)</th>
+                                            <th class="py-3 px-4 text-center w-16 no-print">Acción</th>
+                                        </tr>
+                                        <!-- FILA INTERACTIVA EN LA PARTE SUPERIOR PARA CARGAR NUEVOS ÍTEMS -->
+                                        <tr class="bg-indigo-50/70 border-b-2 border-indigo-200 no-print" id="remito-fila-carga-inline">
+                                            <td class="py-2.5 px-3 font-mono font-bold text-indigo-700" id="form-item-codigo-val">--</td>
+                                            <td class="py-2.5 px-3">
+                                                <select id="remito-item-selector" onchange="llenarCamposItemRemito()" class="w-full border rounded p-1 text-xs text-slate-700 font-semibold bg-white cursor-pointer focus:ring-1 focus:ring-slate-500">
+                                                    <!-- Dinámico -->
+                                                </select>
+                                            </td>
+                                            <td class="py-2.5 px-3">
+                                                <input type="number" id="form-item-cant" value="1" min="1" class="w-full border rounded p-1 text-xs text-center font-bold bg-white text-slate-700 focus:ring-1 focus:ring-slate-500">
+                                            </td>
+                                            <td class="py-2.5 px-3">
+                                                <input type="number" step="0.01" id="form-item-precio-u" class="w-full border rounded p-1 text-xs text-right font-mono bg-white text-slate-700 focus:ring-1 focus:ring-slate-500" placeholder="0.00">
+                                            </td>
+                                            <td class="py-2.5 px-3 text-right font-mono font-black text-slate-400" id="form-item-importe-val">$0.00</td>
+                                            <td class="py-2.5 px-3 text-center">
+                                                <button onclick="agregarItemARemito()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg p-1.5 transition text-xs shadow-md shadow-emerald-600/30" title="Añadir Artículo">
+                                                    <i class="fa-solid fa-plus-circle text-sm"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="remito-cuerpo-tabla">
+                                        <!-- Dinámico -->
+                                    </tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+
+                            <!-- PIE DEL DOCUMENTO INTERACTIVO -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t-2 border-slate-200">
+                                <!-- Métodos de pago y condiciones financieras -->
+                                <div class="bg-slate-50 p-4 rounded-xl border space-y-3 font-semibold text-xs text-slate-600">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-money-check-dollar text-slate-400"></i>Condición de Venta:</span>
+                                        <select id="remito-metodo-pago" onchange="calcularTotalesRemito()" class="border rounded p-1 bg-white font-bold text-xs text-slate-700 cursor-pointer">
+                                            <option value="efectivo" selected>Contado - Efectivo</option>
+                                            <option value="tarjeta">Contado - Tarjeta Crédito</option>
+                                            <option value="billetera">Contado - Transferencia / QR</option>
+                                            <option value="cc">Cuenta Corriente (Posteo de Deuda)</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-tags text-slate-400"></i>Porcentaje Descuento (%):</span>
+                                        <input type="number" id="remito-desc-porcentaje" value="0" min="0" max="100" oninput="calcularTotalesRemito()" class="w-16 border rounded p-1 text-center font-bold text-slate-700 bg-white">
+                                    </div>
+                                </div>
+                                <!-- Consolidado de Totales -->
+                                <div class="bg-slate-50 p-4 rounded-xl border divide-y divide-slate-200 text-xs">
+                                    <div class="flex justify-between pb-2 font-semibold text-slate-500">
+                                        <span>Subtotal Neto:</span>
+                                        <span id="remito-val-subtotal" class="font-mono">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 font-semibold text-slate-500">
+                                        <span>Bonificación Descuento (<span id="remito-print-desc-pct">0</span>%):</span>
+                                        <span id="remito-print-desc-monto" class="font-mono text-red-600">-$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between pt-2 font-black text-slate-800 text-base">
+                                        <span>TOTAL NETO:</span>
+                                        <span id="remito-val-total" class="font-mono text-indigo-700">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BOTONES FINALES DE ACCIÓN INTEGRADOS EN LA HOJA -->
+                            <div class="flex flex-wrap gap-2 justify-end pt-4 border-t border-slate-100 no-print">
+                                <button onclick="limpiarRemito()" class="px-3 py-2 border rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-100 transition"><i class="fa-solid fa-trash-arrow-up mr-1"></i>Vaciar</button>
+                                <button onclick="imprimirComprobanteHTML()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center"><i class="fa-solid fa-print mr-1"></i>Imprimir / PDF</button>
+                                <button onclick="abrirModalEmailSimulado()" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition flex items-center"><i class="fa-solid fa-envelope mr-1"></i>Enviar por Correo</button>
+                                <button id="btn-convertir-comprobante" onclick="ejecutarConversionPresupuesto()" class="hidden px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs font-black transition flex items-center gap-1.5 shadow-lg shadow-amber-500/10"><i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>Aceptar & Generar Pedido</button>
+                                <button onclick="guardarComprobanteDefinitivo()" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-black transition uppercase tracking-wide flex items-center shadow-lg shadow-indigo-600/30"><i class="fa-solid fa-floppy-disk mr-1.5"></i>Guardar Comprobante</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: ventas -->
+
+            <!-- ================= PESTAÑA STOCK ================= -->
+            <!-- START_MODULE: stock -->
+            {% if config.modulos_activos.stock %}
+            <div id="tab-stock" class="pestana-contenido hidden bg-white p-6 rounded-xl shadow-md space-y-6 border">
+                <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-3">
+                    <h2 class="text-xl font-extrabold text-slate-700 flex items-center"><i class="fa-solid fa-box text-indigo-600 mr-2"></i>Catálogo & Control de Stock</h2>
+                    <div class="flex gap-2">
+                        <button onclick="abrirModalArticulo()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"><i class="fa-solid fa-plus mr-1"></i>Nuevo Artículo</button>
+                        <button onclick="toggleElemento('panel-importar')" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"><i class="fa-solid fa-file-import mr-1"></i>Importar Datos</button>
+                    </div>
+                </div>
+
+                <!-- Panel de Importador de Datos -->
+                <div id="panel-importar" class="hidden bg-slate-50 p-5 rounded-xl border-2 border-dashed border-slate-300 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-black text-slate-500 uppercase tracking-wide"><i class="fa-solid fa-file-csv mr-1"></i>Importador Masivo por Punto y Coma (;)</h4>
+                        <button onclick="toggleElemento('panel-importar')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-circle-xmark"></i></button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-relaxed">Formato esperado por cada línea: <br> <code class="bg-slate-200 px-1 py-0.5 rounded font-mono font-bold text-slate-800">CODIGO; DESCRIPCION; STOCK_INICIAL; COSTO; VENTA; FAMILIA</code>. <br> Ejemplo: <code class="bg-slate-200 px-1 py-0.5 rounded font-mono font-bold text-slate-800">LIM-009; Desinfectante Pino 1L; 80; 150.00; 250.00; Limpieza</code></p>
+                    <textarea id="importar-texto" rows="4" class="w-full border rounded-lg p-2.5 font-mono text-xs text-slate-700 bg-white" placeholder="Pegue sus filas aquí..."></textarea>
+                    <button onclick="ejecutarImportacion()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg text-xs transition">Procesar e Inyectar Catálogo</button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-xs border-b">
+                                <th class="py-3 px-4">Código</th>
+                                <th class="py-3 px-4">Descripción / Producto</th>
+                                <th class="py-3 px-4">Familia</th>
+                                <th class="py-3 px-4 text-center">Stock Físico</th>
+                                <th class="py-3 px-4 text-right">P. Costo ($)</th>
+                                <th class="py-3 px-4 text-right">P. Venta ($)</th>
+                                <th class="py-3 px-4 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-stock-cuerpo">
+                            <!-- Carga dinámica -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: stock -->
+
+            <!-- ================= PESTAÑA CLIENTES ================= -->
+            <!-- START_MODULE: ventas -->
+            {% if config.modulos_activos.ventas %}
+            <div id="tab-clientes" class="pestana-contenido hidden bg-white p-6 rounded-xl shadow-md space-y-6 border">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <h2 class="text-xl font-extrabold text-slate-700 flex items-center"><i class="fa-solid fa-users text-indigo-600 mr-2"></i>Cartera de Clientes</h2>
+                    <button onclick="abrirModalContacto('cliente')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"><i class="fa-solid fa-user-plus mr-1"></i>Nuevo Cliente</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-xs border-b">
+                                <th class="py-3 px-4">ID</th>
+                                <th class="py-3 px-4">Nombre Completo</th>
+                                <th class="py-3 px-4">Teléfono</th>
+                                <th class="py-3 px-4">Email</th>
+                                <th class="py-3 px-4 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-clientes-cuerpo">
+                            <!-- Carga dinámica -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: ventas -->
+
+            <!-- ================= PESTAÑA PROVEEDORES ================= -->
+            <!-- START_MODULE: compras -->
+            {% if config.modulos_activos.compras %}
+            <div id="tab-proveedores" class="pestana-contenido hidden bg-white p-6 rounded-xl shadow-md space-y-6 border">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <h2 class="text-xl font-extrabold text-slate-700 flex items-center"><i class="fa-solid fa-truck-moving text-indigo-600 mr-2"></i>Cartera de Proveedores</h2>
+                    <button onclick="abrirModalContacto('proveedor')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"><i class="fa-solid fa-user-plus mr-1"></i>Nuevo Proveedor</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-xs border-b">
+                                <th class="py-3 px-4">ID</th>
+                                <th class="py-3 px-4">Razón Social / Distribuidor</th>
+                                <th class="py-3 px-4">Contacto Principal</th>
+                                <th class="py-3 px-4">Teléfono</th>
+                                <th class="py-3 px-4 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-proveedores-cuerpo">
+                            <!-- Carga dinámica -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: compras -->
+
+            <!-- ================= PESTAÑA CUENTAS CORRIENTES ================= -->
+            <!-- START_MODULE: pagos -->
+            {% if config.modulos_activos.cc_clientes or config.modulos_activos.cc_proveedores %}
+            <div id="tab-cc" class="pestana-contenido hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Panel de Saldos de Clientes -->
+                <div class="lg:col-span-6 bg-white p-5 rounded-xl shadow-md border space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-extrabold text-slate-700 text-sm flex items-center"><i class="fa-solid fa-users-viewfinder text-emerald-600 mr-2"></i>CC Clientes (Cobranzas)</h3>
+                        <button onclick="abrirModalCobroCC()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded text-[10px] transition"><i class="fa-solid fa-circle-dollar-to-slot mr-1"></i>Registrar Cobro</button>
+                    </div>
+                    <div class="overflow-x-auto max-h-64">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-500 font-bold border-b">
+                                    <th class="py-2 px-3">Cliente</th>
+                                    <th class="py-2 px-3 text-right">Saldo Deudor</th>
+                                    <th class="py-2 px-3 text-center">Ficha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cc-clientes-tabla"></tbody>
+                        </table>
+                    </div>
+                    <!-- Ficha Detalle CC Cliente -->
+                    <div id="panel-ficha-cc-cliente" class="hidden bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b pb-1.5">
+                            <span class="font-black text-slate-600 text-[10px]">HISTORIAL DE COBROS • <span id="cc-cliente-nombre-resumen" class="text-indigo-600">--</span></span>
+                            <button onclick="cerrarFichaCCCliente()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-circle-xmark"></i></button>
+                        </div>
+                        <div class="overflow-y-auto max-h-40">
+                            <table class="w-full text-left text-[10px] border-collapse bg-white rounded border">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b font-bold text-slate-500">
+                                        <th class="py-1.5 px-2.5">Fecha</th>
+                                        <th class="py-1.5 px-2.5">Concepto</th>
+                                        <th class="py-1.5 px-2.5 text-right">Monto</th>
+                                        <th class="py-1.5 px-2.5 text-right">Saldo Acum.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-cc-cliente-historial" class="font-mono font-semibold"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Saldos de Proveedores -->
+                <div class="lg:col-span-6 bg-white p-5 rounded-xl shadow-md border space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-extrabold text-slate-700 text-sm flex items-center"><i class="fa-solid fa-truck-ramp-box text-amber-600 mr-2"></i>CC Proveedores (Egresos)</h3>
+                        <button onclick="abrirModalPagoCC()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded text-[10px] transition"><i class="fa-solid fa-wallet mr-1"></i>Registrar Pago</button>
+                    </div>
+                    <div class="overflow-x-auto max-h-64">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-500 font-bold border-b">
+                                    <th class="py-2 px-3">Proveedor</th>
+                                    <th class="py-2 px-3 text-right">Saldo Deudor (Nosotros)</th>
+                                    <th class="py-2 px-3 text-center">Ficha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cc-proveedores-tabla"></tbody>
+                        </table>
+                    </div>
+                    <!-- Ficha Detalle CC Proveedor -->
+                    <div id="panel-ficha-cc-proveedor" class="hidden bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b pb-1.5">
+                            <span class="font-black text-slate-600 text-[10px]">HISTORIAL DE PAGOS • <span id="cc-proveedor-nombre-resumen" class="text-amber-600">--</span></span>
+                            <button onclick="cerrarFichaCCProveedor()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-circle-xmark"></i></button>
+                        </div>
+                        <div class="overflow-y-auto max-h-40">
+                            <table class="w-full text-left text-[10px] border-collapse bg-white rounded border">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b font-bold text-slate-500">
+                                        <th class="py-1.5 px-2.5">Fecha</th>
+                                        <th class="py-1.5 px-2.5">Concepto</th>
+                                        <th class="py-1.5 px-2.5 text-right">Monto</th>
+                                        <th class="py-1.5 px-2.5 text-right">Saldo Acum.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-cc-proveedor-historial" class="font-mono font-semibold"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+            <!-- END_MODULE: pagos -->
+
+            <!-- ================= PESTAÑA REPORTES DINÁMICOS ================= -->
+            <!-- START_MODULE: informes -->
+            {% if config.modulos_activos.informes %}
+            <div id="tab-informes" class="pestana-contenido hidden bg-white p-6 rounded-xl shadow-md space-y-6 border">
+                <div class="border-b pb-4">
+                    <h2 class="text-xl font-extrabold text-slate-700 flex items-center"><i class="fa-solid fa-chart-pie text-indigo-600 mr-2"></i>Generador Dinámico de Reportes</h2>
+                    <p class="text-xs text-slate-400">Configure qué información quiere ordenar, procesar, reordenar columnas y exportar o imprimir en papel.</p>
+                </div>
+
+                <!-- Filtros y Configuraciones Dinámicas del Reporte -->
+                <div class="bg-slate-50 p-5 rounded-xl border grid grid-cols-1 md:grid-cols-4 gap-4 text-xs font-bold text-slate-600">
+                    <div>
+                        <label class="block mb-1 text-slate-500">1. Tipo de Informe</label>
+                        <select id="rep-tipo" onchange="configurarColumnasReporte()" class="w-full border rounded-lg p-2 text-xs text-slate-700 bg-white">
+                            <option value="DETALLE_COMPROBANTES" selected>📄 Detalle Consolidado de Comprobantes (Todos)</option>
+                            <option value="COMPARATIVA_COSTOS_PROVEEDOR">📊 Comparativa de Costos por Proveedor (Historial Compras)</option>
+                            <option value="STOCK">📦 Catálogo General de Stock</option>
+                            <option value="EXISTENCIAS">⚠️ Existencias Críticas (Stock ≤ 10)</option>
+                            <option value="REMITOS">🚚 Historial Consolidado de Remitos</option>
+                            <option value="PEDIDOS">📋 Historial Consolidado de Pedidos</option>
+                            <option value="PRESUPUESTOS">📑 Historial Consolidado de Presupuestos</option>
+                            <option value="ITEMS_DETALLE">🛒 Registro Detallado de Ítems Vendidos y Comprados</option>
+                            <!-- START_MODULE: cc_clientes -->
+                            <option value="CC_CLIENTES">⚖️ Cuentas Corrientes - Clientes</option>
+                            <option value="CC_A_COBRAR">💰 Documentos a Cobrar (Clientes)</option>
+                            <!-- END_MODULE: cc_clientes -->
+                            <!-- START_MODULE: cc_proveedores -->
+                            <option value="CC_PROVEEDORES">💸 Cuentas Corrientes - Proveedores</option>
+                            <option value="CC_A_PAGAR">📤 Documentos a Pagar (Proveedores)</option>
+                            <!-- END_MODULE: cc_proveedores -->
+                            <option value="MOVIMIENTOS_CC">📜 Historial Consolidado de Movimientos CC</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block mb-1 text-slate-500">2. Ordenamiento Múltiple (Criterio Secuencial)</label>
+                        <div class="flex gap-2">
+                            <!-- Nivel de Orden 1 -->
+                            <div class="w-full">
+                                <span class="text-[9px] text-slate-400 block mb-0.5">Primario</span>
+                                <select id="rep-orden-col-1" class="w-full border rounded-lg p-1.5 text-xs text-slate-700 bg-white">
+                                    <!-- Dinámico -->
+                                </select>
+                            </div>
+                            <!-- Nivel de Orden 2 -->
+                            <div class="w-full">
+                                <span class="text-[9px] text-slate-400 block mb-0.5">Secundario</span>
+                                <select id="rep-orden-col-2" class="w-full border rounded-lg p-1.5 text-xs text-slate-700 bg-white">
+                                    <!-- Dinámico -->
+                                </select>
+                            </div>
+                            <div class="w-24">
+                                <span class="text-[9px] text-slate-400 block mb-0.5">Dirección</span>
+                                <select id="rep-orden-dir" class="w-full border rounded-lg p-1.5 text-xs text-slate-700 bg-white font-bold">
+                                    <option value="ASC" selected>ASC ▲</option>
+                                    <option value="DESC">DESC ▼</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 text-slate-500">3. Generar Acción</label>
+                        <button onclick="generarReporteDinamico()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1.5 mt-4">
+                            <i class="fa-solid fa-spinner animate-spin hidden" id="spinner-rep"></i> <i class="fa-solid fa-wand-magic-sparkles"></i> Armar Reporte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector de Visibilidad de Columnas y Reordenador de Columnas -->
+                <div class="bg-slate-50 p-4 rounded-xl border space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-black text-slate-500 tracking-wider uppercase"><i class="fa-solid fa-arrows-left-right text-indigo-500 mr-1.5"></i>Columnas a Mostrar y su Posición</h4>
+                        <p class="text-[10px] text-slate-400">Use las flechas para desplazar la columna hacia la izquierda o derecha en la visualización física.</p>
+                    </div>
+                    <!-- Checkboxes de Columnas Dinámicas -->
+                    <div id="rep-columnas-checkboxes" class="flex flex-wrap gap-4 text-xs font-semibold text-slate-600">
+                        <!-- Dinámico -->
+                    </div>
+                    <!-- Reordenador de Columnas Visual -->
+                    <div id="rep-columnas-reordenador" class="flex flex-wrap gap-2 text-xs font-bold pt-2 border-t border-slate-200">
+                        <!-- Dinámico con flechitas para mover -->
+                    </div>
+                </div>
+
+                <!-- Tabla Resultado del Reporte Dinámico -->
+                <div class="bg-white rounded-xl border shadow-inner overflow-x-auto min-h-[150px]">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead id="tabla-informe-cabecera">
+                            <!-- Dinámico -->
+                        </thead>
+                        <tbody id="tabla-informe-cuerpo">
+                            <tr>
+                                <td colspan="10" class="text-center py-12 text-slate-400 font-medium italic">
+                                    <i class="fa-solid fa-receipt text-4xl mb-2 text-slate-300 block"></i>
+                                    Defina los parámetros arriba y haga clic en "Armar Reporte".
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Botones de Impresión y Exportación -->
+                <div class="flex justify-end gap-2 no-print">
+                    <button onclick="exportarCSVReporteDinamico()" class="px-4 py-2 border rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-file-excel mr-1 text-emerald-600"></i>Exportar a CSV (Excel)</button>
+                    <button onclick="imprimirReporteDinamico()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center"><i class="fa-solid fa-print mr-1"></i>Imprimir Reporte</button>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: informes -->
+
+            <!-- ================= PESTAÑA CARRITO (E-COMMERCE CLIENTES) ================= -->
+            <!-- START_MODULE: carrito -->
+            {% if config.modulos_activos.carrito %}
+            <div id="tab-carrito" class="pestana-contenido hidden space-y-6">
+                <!-- Banner Bienvenida E-commerce -->
+                <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl border border-slate-700">
+                    <div>
+                        <span class="bg-indigo-600 text-white font-black text-[9px] uppercase tracking-wider py-1 px-3 rounded-full"><i class="fa-solid fa-bag-shopping mr-1"></i>Portal de Compra Segura</span>
+                        <h2 class="text-xl font-black mt-1 flex items-center text-white"><i class="fa-solid fa-store mr-2 text-indigo-400"></i>Catálogo de Autogestión Escolar</h2>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Seleccione los artículos comerciales, agréguelos a su carrito de compras virtual y envíe su pedido de forma directa al departamento comercial para su posterior procesamiento.</p>
+                    </div>
+                    <button onclick="abrirCarritoCheckout()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-cart-shopping text-sm animate-bounce"></i> <span>Ver mi Carrito</span> <span id="cart-counter-btn" class="bg-white text-indigo-700 px-2 py-0.5 rounded-full font-black text-[10px]">0</span>
+                    </button>
+                </div>
+
+                <!-- Grilla de Tarjetas de Productos -->
+                <div id="ecommerce-productos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: carrito -->
+
+            
+            <!-- ================= PESTAÑA CONTROL & FLUJO DE CAJA ================= -->
+            <!-- START_MODULE: caja -->
+            {% if config.modulos_activos.caja %}
+            <div id="tab-caja" class="pestana-contenido hidden bg-white p-6 rounded-xl shadow-md space-y-6 border">
+                <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-3">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-700 flex items-center"><i class="fa-solid fa-cash-register text-emerald-600 mr-2"></i>Control & Flujo de Caja (Caja Diaria)</h2>
+                        <p class="text-xs text-slate-400">Supervise las disponibilidades líquidas en tiempo real, arqueo de efectivo e ingresos/egresos manuales.</p>
+                    </div>
+                    <button onclick="cargarCajaDiaria()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-right"></i> <span>Actualizar Caja</span>
+                    </button>
+                </div>
+
+                <!-- Tarjetas de Saldo Líquido -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 shadow-sm space-y-1">
+                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Saldo Neto en Caja</span>
+                        <div class="text-2xl font-black text-emerald-800 font-mono" id="caja-val-neto">$0.00</div>
+                        <span class="text-[9px] text-emerald-600 block">Total líquido disponible</span>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 shadow-sm space-y-1">
+                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-wider">Efectivo en Mano</span>
+                        <div class="text-2xl font-black text-indigo-800 font-mono" id="caja-val-efectivo">$0.00</div>
+                        <span class="text-[9px] text-indigo-600 block">Dinero físico en cajón</span>
+                    </div>
+                    <div class="bg-teal-50 p-4 rounded-xl border border-teal-200 shadow-sm space-y-1">
+                        <span class="text-[10px] font-black text-teal-600 uppercase tracking-wider">Transferencias / QR</span>
+                        <div class="text-2xl font-black text-teal-800 font-mono" id="caja-val-bancos">$0.00</div>
+                        <span class="text-[9px] text-teal-600 block">Bancos & Billeteras</span>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm space-y-1">
+                        <span class="text-[10px] font-black text-amber-600 uppercase tracking-wider">Lote Tarjetas</span>
+                        <div class="text-2xl font-black text-amber-800 font-mono" id="caja-val-tarjetas">$0.00</div>
+                        <span class="text-[9px] text-amber-600 block">Débito & Crédito</span>
+                    </div>
+                </div>
+
+                <!-- Formulario de Movimiento Manual de Caja -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-black text-slate-600 uppercase tracking-wider"><i class="fa-solid fa-plus-minus text-indigo-600 mr-1.5"></i>Registrar Movimiento Manual en Caja</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-bold">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">Tipo de Movimiento</label>
+                            <select id="form-caja-tipo" class="w-full border rounded p-2 bg-white text-slate-700">
+                                <option value="INGRESO" selected>🟢 INGRESO (+)</option>
+                                <option value="EGRESO">🔴 EGRESO (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">Monto ($)</label>
+                            <input type="number" id="form-caja-monto" step="0.01" placeholder="0.00" class="w-full border rounded p-2 bg-white font-mono text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">Medio de Pago</label>
+                            <select id="form-caja-medio" class="w-full border rounded p-2 bg-white text-slate-700">
+                                <option value="efectivo" selected>💵 Efectivo</option>
+                                <option value="transferencia">📱 Transferencia / QR</option>
+                                <option value="tarjeta">💳 Tarjeta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">Concepto / Motivo</label>
+                            <input type="text" id="form-caja-concepto" placeholder="Apertura, Fondo Fijo, Retiro..." class="w-full border rounded p-2 bg-white font-semibold">
+                        </div>
+                    </div>
+                    <div class="text-right pt-2 border-t border-slate-200">
+                        <button onclick="registrarMovimientoCajaManual()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow-md shadow-indigo-600/20">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Asentar Movimiento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Movimientos de Caja Diaria -->
+                <div class="bg-white rounded-xl border shadow-inner overflow-x-auto min-h-[180px]">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[10px] border-b">
+                                <th class="py-3 px-4">ID</th>
+                                <th class="py-3 px-4">Fecha</th>
+                                <th class="py-3 px-4">Tipo</th>
+                                <th class="py-3 px-4">Medio Pago</th>
+                                <th class="py-3 px-4">Concepto / Motivo</th>
+                                <th class="py-3 px-4 text-right">Monto ($)</th>
+                                <th class="py-3 px-4 text-center">Registrado Por</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-caja-movimientos-cuerpo" class="divide-y divide-slate-100">
+                            <!-- Carga dinámica -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- END_MODULE: caja -->
+
+            <!-- ================= PESTAÑA PANEL MASTER ================= -->
+            <!-- START_MODULE: master -->
+            <div id="tab-master" class="pestana-contenido hidden bg-slate-900 text-white p-6 rounded-xl shadow-xl space-y-6 border border-slate-700">
+                <div class="border-b border-slate-700 pb-4">
+                    <span class="bg-amber-500 text-slate-950 font-black text-[9px] tracking-wider py-1 px-2.5 rounded-full uppercase"><i class="fa-solid fa-shield mr-1"></i>Acceso Desarrollador Master</span>
+                    <h2 class="text-2xl font-black mt-2 flex items-center text-amber-400"><i class="fa-solid fa-gears mr-2"></i>Consola Metaprogramada de Compilación v2.0</h2>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Configure los módulos de negocio que desea compilar y encapsular en el instalador del cliente destino. El sistema excluirá físicamente el código fuente y las rutas de los módulos no seleccionados.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Módulos Disponibles para Toggling -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+                        <h3 class="font-bold text-sm text-slate-300 flex items-center border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toggle-on mr-2 text-amber-500"></i> Habilitación de Módulos
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-300">
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-stock" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>📦 Catálogo & Control Stock</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-ventas" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>🧾 Ventas & Facturación</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-compras" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>🚚 Compras & Proveedores</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-cc_clientes" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>⚖️ Cuentas Corrientes (Clientes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-cc_proveedores" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>💸 Cuentas Corrientes (Proveedores)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-informes" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>📊 Informes & Análisis Dinámicos</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-pagos" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>💳 Módulo de Cobros y Tarjetas</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-carrito" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>🛒 Portal E-Commerce & Carrito</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-slate-700 transition">
+                                <input type="checkbox" id="m-comp-caja" checked class="h-4.5 w-4.5 text-amber-500 bg-slate-700 border-slate-600 rounded">
+                                <span>💵 Control & Flujo de Caja (Caja Diaria)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Compilación & Descarga -->
+                    <div class="space-y-4 bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-sm text-amber-400 flex items-center border-b border-slate-700 pb-2">
+                                <i class="fa-solid fa-code-branch mr-2"></i> Generador Metaprogramado SFX
+                            </h3>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-1">Nombre de Archivo del Script para Cliente (.py)</label>
+                                <input type="text" id="m-comp-filename" value="instalar_y_ejecutar_cliente" placeholder="instalar_y_ejecutar_cliente" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs font-mono text-amber-400 focus:ring-amber-500 focus:border-amber-500">
+                                <span class="text-[9px] text-slate-500 mt-1 block">El archivo se guardará de forma limpia en tu PC de trabajo local para entregar a tu cliente.</span>
+                            </div>
+                        </div>
+
+                        <button onclick="compilarInstaladorPersonalizado()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-lg text-xs font-black uppercase tracking-wider transition flex justify-center items-center space-x-2 shadow-lg shadow-amber-500/20">
+                            <i class="fa-solid fa-file-arrow-down text-sm"></i> <span>Compilar & Generar Script a Medida</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- END_MODULE: master -->
+
+        </main>
+
+        <!-- PIE DE PAGINA -->
+        <footer class="bg-slate-800 text-slate-400 py-6 border-t border-slate-700 no-print">
+            <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-1">
+                <p><strong>StockDocente v2.0</strong> - Entorno Comercial Adaptable.</p>
+                <p class="text-slate-500">Tecnologías Full-Stack Académicas: Flask, Python, JSON de Persistencia Plana, Tailwind CSS y Javascript Nactivo.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ================= MODALES EMERGENTES ================= -->
+    
+    <!-- Modal de Formulario de Artículo (Carga Completa) -->
+    <!-- START_MODULE: stock -->
+    {% if config.modulos_activos.stock %}
+    <div id="modal-articulo" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 id="modal-articulo-titulo" class="text-lg font-bold border-b pb-2 mb-4 text-slate-700">Agregar Nuevo Artículo</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="modal-art-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción / Producto</label>
+                    <input type="text" id="modal-art-desc" placeholder="Nombre completo del producto" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Stock Inicial</label>
+                        <input type="number" id="modal-art-cant" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Familia</label>
+                        <input type="text" id="modal-art-fam" placeholder="Alimentos, etc" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500 text-center">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border">
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">Precio Costo ($)</label>
+                        <input type="number" step="0.01" id="modal-art-costo" oninput="calcularVentaModal('costo')" class="w-full border rounded-lg p-1.5 text-xs text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">Margen %</label>
+                        <input type="number" step="0.01" id="modal-art-ganancia" oninput="calcularVentaModal('ganancia')" class="w-full border rounded-lg p-1.5 text-xs text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">P. Venta ($)</label>
+                        <input type="number" step="0.01" id="modal-art-venta" oninput="calcularVentaModal('venta')" class="w-full border rounded-lg p-1.5 text-xs text-center font-bold text-indigo-600">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-4 border-t">
+                    <button onclick="cerrarModalArticulo()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                    <button onclick="guardarArticuloModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">Guardar Artículo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- END_MODULE: stock -->
+
+    <!-- Modal de Formulario de Contactos (Clientes / Proveedores) -->
+    <div id="modal-contacto" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 id="modal-contacto-titulo" class="text-lg font-bold border-b pb-2 mb-4 text-slate-700">Agregar Contacto</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="modal-cont-id">
+                <input type="hidden" id="modal-cont-tipo"> <!-- cliente o proveedor -->
+                <div>
+                    <label id="modal-label-nombre" class="block text-xs font-semibold text-slate-500 mb-1">Nombre Completo</label>
+                    <input type="text" id="modal-cont-nombre" placeholder="Nombre completo o Razón Social" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500">
+                </div>
+                <div id="grupo-modal-contacto-pers">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Contacto Principal</label>
+                    <input type="text" id="modal-cont-personal" placeholder="Nombre de contacto" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Teléfono</label>
+                        <input type="text" id="modal-cont-telefono" placeholder="Número telefónico" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500 text-center">
+                    </div>
+                    <div id="grupo-modal-email">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Correo Electrónico</label>
+                        <input type="email" id="modal-cont-email" placeholder="correo@ejemplo.com" class="w-full border rounded-lg p-2 text-sm focus:ring-indigo-500 text-center">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-4 border-t">
+                    <button onclick="cerrarModalContacto()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                    <button onclick="guardarContactoModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro de Cobros (CC Clientes) -->
+    <!-- START_MODULE: cc_clientes -->
+    <div id="modal-cobro-cc" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4 text-slate-700 flex items-center"><i class="fa-solid fa-circle-dollar-to-slot text-emerald-600 mr-2"></i>Registrar Cobro CC</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Cliente Seleccionado</label>
+                    <select id="modal-cobro-cliente-id" onchange="cargarDocumentosPendientesEnModal('clientes', this.value)" class="w-full border rounded-lg p-2 text-xs text-slate-700 bg-slate-50"></select>
+                <div id="modal-cobro-pendientes-container" class="border rounded-lg p-2 bg-slate-100 space-y-1 max-h-32 overflow-y-auto hidden">
+                    <!-- Dinámico: Documentos pendientes -->
+                </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Fecha de Cobro</label>
+                        <input type="date" id="modal-cobro-fecha" class="w-full border rounded-lg p-2 text-xs text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Monto a Rendir ($)</label>
+                        <input type="number" id="modal-cobro-monto" step="0.01" placeholder="0.00" class="w-full border rounded-lg p-2 text-xs text-center font-bold text-emerald-700 bg-emerald-50">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Concepto o Detalle de Recibo</label>
+                    <input type="text" id="modal-cobro-concepto" placeholder="Cobro s/Recibo 001-098" class="w-full border rounded-lg p-2 text-xs">
+                </div>
+                <!-- Medio de Pago y Detalles para Cobro CC -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Medio de Pago</label>
+                    <select id="modal-cobro-medio" onchange="cambiarMedioPagoCC('cobro', this.value)" class="w-full border rounded-lg p-2 text-xs text-slate-700 bg-white cursor-pointer font-bold">
+                        <option value="efectivo" selected>💵 Efectivo</option>
+                        <option value="transferencia">📱 Transferencia Bancaria / Billetera / QR</option>
+                        <option value="tarjeta">💳 Tarjeta Débito / Crédito</option>
+                        <option value="cheque">📄 Cheque de Terceros</option>
+                    </select>
+                </div>
+                
+                <!-- Campos Dinámicos para Transferencia Cobro -->
+                <div id="cobro-detalles-transferencia" class="hidden grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Alias / CBU / CVU</label>
+                        <input type="text" id="modal-cobro-alias" placeholder="mi.alias.pago" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">ID Transacción (MP/Bank)</label>
+                        <input type="text" id="modal-cobro-txid" placeholder="TX-123456" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                </div>
+
+                <!-- Campos Dinámicos para Tarjeta Cobro -->
+                <div id="cobro-detalles-tarjeta" class="hidden grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nº Terminal / Lote</label>
+                        <input type="text" id="modal-cobro-lote" placeholder="Lote 10 / Term 01" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Últimos 4 Dígitos</label>
+                        <input type="text" id="modal-cobro-ult4" placeholder="4321" maxlength="4" class="w-full border rounded p-1.5 text-xs bg-white text-center font-mono font-bold text-slate-800">
+                    </div>
+                </div>
+
+                <!-- Campos Dinámicos para Cheque Cobro -->
+                <div id="cobro-detalles-cheque" class="hidden space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Número de Cheque</label>
+                            <input type="text" id="modal-cobro-cheque-num" placeholder="CHQ-100234" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Banco Emisor</label>
+                            <input type="text" id="modal-cobro-banco" placeholder="Banco Galicia" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Fecha de Vencimiento / Cobro</label>
+                        <input type="date" id="modal-cobro-cheque-venc" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-4 border-t">
+                    <button onclick="cerrarModalCobroCC()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                    <button onclick="guardarCobroCC()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Acreditar Cobro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MODULE: cc_clientes -->
+
+    <!-- Modal de Registro de Pagos (CC Proveedores) -->
+    <!-- START_MODULE: cc_proveedores -->
+    <div id="modal-pago-cc" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4 text-slate-700 flex items-center"><i class="fa-solid fa-wallet text-amber-600 mr-2"></i>Registrar Pago CC (A Proveedor)</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Proveedor Beneficiario</label>
+                    <select id="modal-pago-proveedor-id" onchange="cargarDocumentosPendientesEnModal('proveedores', this.value)" class="w-full border rounded-lg p-2 text-xs text-slate-700 bg-slate-50"></select>
+                <div id="modal-pago-pendientes-container" class="border rounded-lg p-2 bg-slate-100 space-y-1 max-h-32 overflow-y-auto hidden">
+                    <!-- Dinámico: Documentos pendientes -->
+                </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Fecha de Emisión</label>
+                        <input type="date" id="modal-pago-fecha" class="w-full border rounded-lg p-2 text-xs text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Importe Abonado ($)</label>
+                        <input type="number" id="modal-pago-monto" step="0.01" placeholder="0.00" class="w-full border rounded-lg p-2 text-xs text-center font-bold text-amber-700 bg-amber-50">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Concepto o Folio de Egreso</label>
+                    <input type="text" id="modal-pago-concepto" placeholder="Pago s/Comprobante" class="w-full border rounded-lg p-2 text-xs">
+                </div>
+                <!-- Medio de Pago y Detalles para Pago CC -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Medio de Pago</label>
+                    <select id="modal-pago-medio" onchange="cambiarMedioPagoCC('pago', this.value)" class="w-full border rounded-lg p-2 text-xs text-slate-700 bg-white cursor-pointer font-bold">
+                        <option value="efectivo" selected>💵 Efectivo</option>
+                        <option value="transferencia">📱 Transferencia Bancaria / Billetera / QR</option>
+                        <option value="tarjeta">💳 Tarjeta Débito / Crédito</option>
+                        <option value="cheque">📄 Cheque Propio / Diferido</option>
+                    </select>
+                </div>
+                
+                <!-- Campos Dinámicos para Transferencia Pago -->
+                <div id="pago-detalles-transferencia" class="hidden grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">CBU / CVU / Alias Destino</label>
+                        <input type="text" id="modal-pago-alias" placeholder="proveedor.alias" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">ID Transacción o Referencia</label>
+                        <input type="text" id="modal-pago-txid" placeholder="TX-987654" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                </div>
+
+                <!-- Campos Dinámicos para Tarjeta Pago -->
+                <div id="pago-detalles-tarjeta" class="hidden grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nº Terminal / Lote</label>
+                        <input type="text" id="modal-pago-lote" placeholder="Lote 05 / Term 02" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Últimos 4 Dígitos</label>
+                        <input type="text" id="modal-pago-ult4" placeholder="9876" maxlength="4" class="w-full border rounded p-1.5 text-xs bg-white text-center font-mono font-bold text-slate-800">
+                    </div>
+                </div>
+
+                <!-- Campos Dinámicos para Cheque Pago -->
+                <div id="pago-detalles-cheque" class="hidden space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Número de Cheque</label>
+                            <input type="text" id="modal-pago-cheque-num" placeholder="CHQ-900876" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Banco Emisor</label>
+                            <input type="text" id="modal-pago-banco" placeholder="Banco Santander" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Fecha de Vencimiento / Pago</label>
+                        <input type="date" id="modal-pago-cheque-venc" class="w-full border rounded p-1.5 text-xs bg-white text-slate-800 font-semibold">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-4 border-t">
+                    <button onclick="cerrarModalPagoCC()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                    <button onclick="guardarPagoCC()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition">Registrar Egreso</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MODULE: cc_proveedores -->
+
+    <!-- Modal de Configuración de Perfil (Mínimal: Sólo Usuario & Clave) -->
+    <div id="modal-perfil" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm border">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4 text-slate-700 flex items-center"><i class="fa-solid fa-lock text-indigo-600 mr-2"></i>Seguridad de Acceso</h3>
+            
+            <div class="space-y-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs font-bold text-slate-600">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nombre de Usuario de Acceso</label>
+                        <input type="text" id="perfil-usuario-nuevo" class="w-full border rounded p-2 bg-white font-bold" placeholder="Nuevo usuario">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Contraseña Actual para Confirmar</label>
+                        <input type="password" id="perfil-contra-actual" placeholder="••••••••" class="w-full border rounded p-2 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nueva Contraseña</label>
+                        <input type="password" id="perfil-contra-nueva" placeholder="••••••••" class="w-full border rounded p-2 text-center">
+                    </div>
+                    <div class="border-t pt-2 space-y-2 text-left">
+                        <span class="block text-[10px] font-black text-slate-500 uppercase"><i class="fa-solid fa-envelope text-teal-600 mr-1"></i>Sincronización Correo Gmail SMTP</span>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Gmail Emisor (Opcional)</label>
+                            <input type="email" id="perfil-gmail-user" placeholder="tu_cuenta@gmail.com" class="w-full border rounded p-2 text-xs font-bold text-slate-700 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Gmail Clave Aplicación (16 letras)</label>
+                            <input type="password" id="perfil-gmail-pass" placeholder="••••••••••••••••" class="w-full border rounded p-2 text-xs font-mono text-slate-700 bg-white">
+                        </div>
+                    </div>
+                    <button onclick="guardarNuevaContrasena()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-lg text-xs font-bold transition">Actualizar Credenciales</button>
+                </div>
+                <div class="text-right">
+                    <button onclick="cerrarModalPerfil()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Branding e Identidad Inline (Exclusivo en el Documento) -->
+    <div id="modal-branding-inline" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4 text-slate-700 flex items-center"><i class="fa-solid fa-palette text-indigo-600 mr-2"></i>Identidad de Marca</h3>
+            <div class="space-y-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs font-bold text-slate-600">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nombre de la Empresa / Comercio</label>
+                        <input type="text" id="brand-input-nombre" class="w-full border rounded p-2 text-xs font-bold text-slate-700 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Subtítulo / Rubro de la Empresa</label>
+                        <input type="text" id="brand-input-subtitulo" placeholder="Distribuidor Comercial Multi-Rubro Modular" class="w-full border rounded p-2 text-xs font-bold text-slate-700 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Domicilio y CUIT de Práctica</label>
+                        <input type="text" id="brand-input-domicilio" placeholder="Domicilio Comercial de Práctica 123 • Buenos Aires • CUIT 30-12345678-9" class="w-full border rounded p-2 text-xs font-bold text-slate-700 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">URL de Logotipo Personalizado (Imagen PNG/JPG/SVG - Opcional)</label>
+                        <input type="text" id="brand-input-logourl" placeholder="https://ejemplo.com/logo.png" class="w-full border rounded p-2 text-xs font-mono text-slate-700 bg-white">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Emoji de Logotipo</label>
+                            <select id="brand-input-emoji" class="w-full border rounded p-2 text-xs font-bold text-slate-700 bg-white text-center">
+                                <option value="📦">📦 Caja Comercial</option>
+                                <option value="🛠️">🛠️ Ferretería</option>
+                                <option value="🛒">🛒 Supermercado</option>
+                                <option value="🍎">🍎 Almacén</option>
+                                <option value="🐾">🐾 Veterinaria</option>
+                                <option value="📚">📚 Librería</option>
+                                <option value="👕">👕 Tienda Ropa</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Color de Interfaz</label>
+                            <div class="flex items-center gap-1.5 h-full pt-1.5 justify-center">
+                                <button onclick="guardarTemaColor('indigo')" class="w-6 h-6 rounded-full bg-indigo-600 border-2 border-white shadow hover:scale-110 transition" title="Índigo"></button>
+                                <button onclick="guardarTemaColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow hover:scale-110 transition" title="Esmeralda"></button>
+                                <button onclick="guardarTemaColor('rose')" class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow hover:scale-110 transition" title="Rosa"></button>
+                                <button onclick="guardarTemaColor('amber')" class="w-6 h-6 rounded-full bg-amber-500 border-2 border-white shadow hover:scale-110 transition" title="Ámbar"></button>
+                                <button onclick="guardarTemaColor('slate')" class="w-6 h-6 rounded-full bg-slate-600 border-2 border-white shadow hover:scale-110 transition" title="Pizarra"></button>
+                                <button onclick="guardarTemaColor('cyan')" class="w-6 h-6 rounded-full bg-cyan-600 border-2 border-white shadow hover:scale-110 transition" title="Cian"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="guardarConfiguracionBranding()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs font-bold transition">Aceptar & Persistir</button>
+                </div>
+                <div class="text-right">
+                    <button onclick="cerrarModalBranding()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Envió de Correo Electrónico Simulado -->
+    <div id="modal-email-simulado" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md border">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4 text-slate-700 flex items-center"><i class="fa-solid fa-paper-plane text-teal-600 mr-2 animate-bounce"></i>Envío SMTP Académico</h3>
+            <div class="space-y-4">
+                <div class="space-y-3 text-xs font-bold text-slate-600">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Destinatario (Email del Cliente/Proveedor)</label>
+                        <input type="email" id="email-to-input" class="w-full border rounded p-2 bg-white" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Asunto de Mensaje</label>
+                        <input type="text" id="email-subject-input" class="w-full border rounded p-2 bg-white" placeholder="Envío de comprobante...">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Cuerpo del Correo</label>
+                        <textarea id="email-body-input" rows="4" class="w-full border rounded p-2 bg-white" placeholder="Estimado cliente, adjuntamos..."></textarea>
+                    </div>
+                    <button onclick="ejecutarEnvioEmailSimulado()" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg text-xs font-bold transition">Enviar Correo (Simular Relay)</button>
+                </div>
+                <div class="text-right">
+                    <button onclick="cerrarModalEmailSimulado()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checkout / Pasarela de Pagos (Simulado Stripe / Luhn / QR) -->
+    <!-- START_MODULE: pagos -->
+    <div id="modal-checkout-pago" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg border flex flex-col justify-between min-h-[480px]">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-base font-black text-slate-700 flex items-center"><i class="fa-solid fa-credit-card text-indigo-600 mr-2"></i>Procesamiento Seguro de Transacción</h3>
+                    <button onclick="cerrarPasarelaPago()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-circle-xmark"></i></button>
+                </div>
+
+                <!-- Opciones de pestaña de pagos -->
+                <div class="flex border-b text-xs font-bold text-slate-400 divide-x bg-slate-50 rounded border">
+                    <button id="tab-btn-card" onclick="cambiarMetodoPagoCheckout('card')" class="w-full py-2 bg-white text-indigo-600 rounded-l border-b-2 border-indigo-500">Tarjeta Crédito</button>
+                    <button id="tab-btn-qr" onclick="cambiarMetodoPagoCheckout('qr')" class="w-full py-2">Código QR</button>
+                    <button id="tab-btn-direct" onclick="cambiarMetodoPagoCheckout('direct')" class="w-full py-2">Efectivo / CC</button>
+                </div>
+
+                <!-- 1. Formulario Tarjeta (Stripe Academico) -->
+                <div id="pay-form-card" class="space-y-4 text-xs font-bold text-slate-600">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Nombre Completo Titular</label>
+                        <input type="text" id="card-holder" placeholder="Juan Pérez" class="w-full border rounded-lg p-2 text-xs uppercase font-semibold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Número de Tarjeta (Prueba Luhn)</label>
+                        <input type="text" id="card-number" placeholder="4532 7182 9381 2232" class="w-full border rounded-lg p-2 text-xs font-mono text-center tracking-wider text-slate-800" oninput="validarTarjetaLuhnUI()">
+                        <span id="card-validation-label" class="text-[9px] mt-1 block font-bold text-slate-400">Ingrese número</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Vencimiento</label>
+                            <input type="text" id="card-exp" placeholder="MM/AA" class="w-full border rounded-lg p-2 text-xs text-center font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-1">CVV / Código</label>
+                            <input type="password" id="card-cvv" placeholder="•••" class="w-full border rounded-lg p-2 text-xs text-center font-mono">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. QR Code Dinámico -->
+                <div id="pay-form-qr" class="hidden flex flex-col items-center justify-center p-4 space-y-3">
+                    <canvas id="qr-canvas" class="w-40 h-40 border-4 border-slate-900 rounded-lg bg-white p-2 shadow-md"></canvas>
+                    <p class="text-[11px] font-bold text-slate-500 text-center leading-relaxed">Escanee el código QR simulado para transferir mediante billetera virtual. <br>El QR expira automáticamente en 5 minutos.</p>
+                </div>
+
+                <!-- 3. Efectivo o Cuenta Corriente (Aceptación directa) -->
+                <div id="pay-form-direct" class="p-6 bg-slate-50 border rounded-lg text-center space-y-2 hidden">
+                    <span class="text-4xl text-emerald-500 block"><i class="fa-solid fa-circle-check"></i></span>
+                    <p class="text-xs font-bold text-slate-700">No se requieren pasos adicionales para este método.</p>
+                    <p class="text-[10px] text-slate-400">Haga clic en 'Confirmar' para asentar de forma definitiva la operación en el libro diario comercial local.</p>
+                </div>
+
+                <!-- Logs de Stripe devueltos por el servidor -->
+                <div id="stripe-log-container" class="hidden">
+                    <label class="block text-[9px] font-black text-slate-400 mb-1">STDOUT / LOG DEL SERVIDOR FLASK (STRIPE ACADÉMICO):</label>
+                    <pre id="stripe-log" class="bg-slate-950 text-emerald-400 p-2.5 rounded-lg text-[9px] font-mono overflow-y-auto max-h-[120px] whitespace-pre-wrap leading-tight border border-slate-800 shadow-inner"></pre>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100 mt-4">
+                <button onclick="cerrarPasarelaPago()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cancelar</button>
+                <button id="btn-confirmar-checkout" onclick="procesarPagoDefinitivo()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">Confirmar Transacción</button>
+            </div>
+        </div>
+    </div>
+    <!-- END_MODULE: pagos -->
+
+    <!-- Modal Carrito de Compras (Checkout E-commerce Cliente) -->
+    <!-- START_MODULE: carrito -->
+    <div id="modal-carrito-checkout" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg border flex flex-col justify-between min-h-[480px]">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-base font-black text-slate-700 flex items-center"><i class="fa-solid fa-cart-shopping text-indigo-600 mr-2"></i>Mi Carrito de Compras</h3>
+                    <button onclick="cerrarCarritoCheckout()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-circle-xmark"></i></button>
+                </div>
+
+                <!-- Lista de ítems en el carrito -->
+                <div class="overflow-y-auto max-h-[220px] space-y-2 pr-1">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-500 font-bold border-b">
+                                <th class="py-2 px-3">Artículo</th>
+                                <th class="py-2 px-3 text-center">Cant.</th>
+                                <th class="py-2 px-3 text-right">Unitario</th>
+                                <th class="py-2 px-3 text-right">Subtotal</th>
+                                <th class="py-2 px-3 text-center">Quitar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="carrito-cuerpo-items"></tbody>
+                    </table>
+                </div>
+
+                <!-- Elección de método de pago por el cliente -->
+                <div class="bg-slate-50 p-4 rounded-xl border space-y-2.5 text-xs text-slate-600 font-semibold">
+                    <div class="flex justify-between items-center">
+                        <span>Forma de Liquidación:</span>
+                        <select id="carrito-metodo-pago" class="border rounded p-1 bg-white font-bold text-slate-700">
+                            <option value="efectivo" selected>Efectivo (Pago al Recibir)</option>
+                            <option value="tarjeta">Pago Online con Tarjeta</option>
+                            <option value="cc">Imputar a mi Cuenta Corriente</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between text-base font-black text-slate-800 pt-1.5 border-t">
+                        <span>Importe Final a Abonar:</span>
+                        <span id="carrito-val-total" class="font-mono text-indigo-700">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 border-t pt-4">
+                <button onclick="cerrarCarritoCheckout()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Seguir Comprando</button>
+                <button onclick="enviarPedidoDesdeCarrito()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">Enviar Pedido de Compra</button>
+            </div>
+        </div>
+    </div>
+    <!-- END_MODULE: carrito -->
+
+    
+    <!-- Modal de Listado de Comprobantes de Contacto (Clientes / Proveedores) -->
+    <div id="modal-comprobantes-contacto" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-3xl border flex flex-col justify-between max-h-[85vh]">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 id="modal-comprobantes-contacto-titulo" class="text-base font-black text-slate-700 flex items-center">
+                        <i class="fa-solid fa-folder-open text-amber-600 mr-2"></i>Comprobantes del Contacto
+                    </h3>
+                    <button onclick="cerrarModalComprobantesContacto()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-circle-xmark"></i></button>
+                </div>
+                
+                <div class="overflow-y-auto max-h-[380px]">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-bold border-b uppercase text-[10px]">
+                                <th class="py-2.5 px-3">Nº Folio</th>
+                                <th class="py-2.5 px-3">Comprobante</th>
+                                <th class="py-2.5 px-3">Fecha</th>
+                                <th class="py-2.5 px-3">Operación</th>
+                                <th class="py-2.5 px-3 text-right">Total ($)</th>
+                                <th class="py-2.5 px-3 text-center">Estado</th>
+                                <th class="py-2.5 px-3 text-center no-print">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-comprobantes-contacto-cuerpo">
+                            <!-- Carga dinámica -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex justify-end pt-4 border-t mt-4">
+                <button onclick="cerrarModalComprobantesContacto()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Post-Guardado de Comprobante (Confirmación y Descarga/Email/WhatsApp) -->
+    <div id="modal-post-guardar" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex justify-center items-center z-50 hidden no-print">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md border text-center space-y-5">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-extrabold text-slate-800" id="post-guardar-titulo">¡Comprobante Guardado con Éxito!</h3>
+                <p class="text-xs text-slate-500 mt-1" id="post-guardar-sub">Se registró el documento <strong id="post-guardar-folio" class="text-indigo-600">--</strong> por un total de <strong id="post-guardar-total" class="font-mono text-slate-800">$0.00</strong>.</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 space-y-3">
+                <p class="text-[11px] text-slate-500">¿Desea descargar, imprimir o enviar este comprobante ahora?</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="postGuardarAccion('imprimir')" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> <span>Sí, Imprimir / Descargar PDF</span>
+                    </button>
+                    <button onclick="postGuardarAccion('email')" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-envelope"></i> <span>Enviar por Correo Electrónico</span>
+                    </button>
+                    <button onclick="postGuardarAccion('whatsapp')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp"></i> <span>Compartir por WhatsApp</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t flex justify-center">
+                <button id="btn-post-guardar-no" onclick="cerrarModalPostGuardar()" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-xs font-extrabold transition">
+                    No, finalizar y continuar (Presione Enter)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal WYSIWYG de Vista Completa de Comprobante (Ventana Flotante y Arrastrable) -->
+    <div id="modal-ver-comprobante-wysiwyg" class="fixed inset-0 pointer-events-none z-50 hidden no-print">
+        <div id="modal-ver-comprobante-dialog" class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-2xl border-2 border-indigo-300 flex flex-col justify-between pointer-events-auto fixed top-12 left-1/2 -translate-x-1/2 max-h-[90vh] overflow-y-auto z-50">
+            <div class="space-y-6">
+                <!-- CABECERA ARRASTRABLE (DRAGGABLE HEADER) -->
+                <div id="wysiwyg-modal-header" class="flex justify-between items-center border-b pb-3 no-print cursor-grab active:cursor-grabbing select-none bg-slate-100 -mt-6 -mx-6 sm:-mt-8 sm:-mx-8 p-4 sm:px-8 sm:py-4 rounded-t-2xl border-b border-slate-200 shadow-sm" title="Haz clic y arrastra para mover este comprobante por la pantalla">
+                    <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-up-down-left-right text-indigo-600 text-sm"></i>
+                        <i class="fa-solid fa-file-invoice text-indigo-600"></i>
+                        <span>Vista de Comprobante Comercial</span>
+                        <span id="wysiwyg-modal-badge-tipo" class="px-2 py-0.5 rounded-full text-[10px] font-black border bg-indigo-50 text-indigo-700 border-indigo-200">REMITO</span>
+                    </h3>
+                                        <div class="flex items-center gap-2">
+                        <button type="button" onclick="abrirComprobantePopUp2Monitor()" class="text-[10px] font-extrabold text-teal-700 bg-teal-50 px-2 py-1 rounded border border-teal-200 hover:bg-teal-100 transition shadow-xs flex items-center gap-1" title="Abrir comprobante en ventana emergente para 2º monitor">
+                            <i class="fa-solid fa-desktop"></i> <span>2º Monitor</span>
+                        </button>
+                        <span class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 shadow-xs"><i class="fa-solid fa-up-down-left-right mr-1"></i>Mover Ventana</span>
+                        <button onclick="cerrarModalVerComprobanteWYSIWYG()" class="text-slate-400 hover:text-slate-600 text-xl font-bold transition">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HOJA TIPO PAPEL WYSIWYG REAL -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-300 space-y-5 text-xs text-slate-700 shadow-inner">
+                    <!-- LOGO Y DATOS DE LA EMPRESA -->
+                    <div class="grid grid-cols-2 gap-4 border-b border-slate-300 pb-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span id="wysiwyg-brand-logo" class="text-3xl">📦</span>
+                                <h4 id="wysiwyg-brand-name" class="text-xl font-black text-slate-800 uppercase tracking-tight">StockDocente S.R.L.</h4>
+                            </div>
+                            <p id="wysiwyg-brand-sub" class="text-[11px] text-slate-500 font-bold">Distribuidor Comercial Multi-Rubro Modular</p>
+                            <p id="wysiwyg-brand-dom" class="text-[9px] text-slate-400">Domicilio Comercial de Práctica 123 • Buenos Aires • CUIT 30-12345678-9</p>
+                        </div>
+                        <div class="text-right space-y-1">
+                            <div class="text-sm font-black text-indigo-700 font-mono" id="wysiwyg-doc-numero">REM-0001</div>
+                            <div class="text-slate-500 font-semibold" id="wysiwyg-doc-tipo-nombre">Comprobante Comercial</div>
+                            <div class="text-[11px] font-mono text-slate-500">Fecha: <strong id="wysiwyg-doc-fecha" class="text-slate-800">2026-09-15</strong></div>
+                            <div class="text-[11px] font-mono text-slate-500">Operación: <strong id="wysiwyg-doc-operacion" class="text-slate-800">VENTA</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- DATOS DEL CLIENTE / PROVEEDOR (100% VISIBLES) -->
+                    <div class="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1"><i class="fa-solid fa-address-card mr-1"></i>Entidad Comercial Vinculada</span>
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <div class="font-extrabold text-sm text-slate-900" id="wysiwyg-contacto-nombre">Ferretería Centro S.A.</div>
+                            <span class="font-mono text-xs text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100" id="wysiwyg-contacto-id">CLI-002</span>
+                        </div>
+                        <div class="flex gap-4 text-[10px] text-slate-500 font-mono pt-1 border-t mt-1">
+                            <span>📞 Tel: <strong id="wysiwyg-contacto-tel" class="text-slate-700">-</strong></span>
+                            <span>✉️ Email: <strong id="wysiwyg-contacto-email" class="text-slate-700">-</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- TABLA DE ARTÍCULOS DETALLADA -->
+                    <div class="bg-white rounded-lg border overflow-hidden">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 font-bold text-[10px] uppercase border-b">
+                                    <th class="py-2 px-3">Código</th>
+                                    <th class="py-2 px-3">Producto / Descripción</th>
+                                    <th class="py-2 px-3 text-center">Cant.</th>
+                                    <th class="py-2 px-3 text-right">P. Unit ($)</th>
+                                    <th class="py-2 px-3 text-right">Importe ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wysiwyg-tabla-items-cuerpo" class="divide-y divide-slate-100">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TOTALES Y CONDICIÓN DE VENTA -->
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div class="bg-white p-3 rounded-lg border space-y-1.5 text-[11px] font-semibold text-slate-600">
+                            <div class="flex justify-between">
+                                <span>Forma de Pago:</span>
+                                <strong id="wysiwyg-doc-metodo-pago" class="text-slate-800 uppercase">Contado - Efectivo</strong>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Emitido Por:</span>
+                                <strong id="wysiwyg-doc-creado-por" class="text-slate-800">admin</strong>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Estado Doc:</span>
+                                <strong id="wysiwyg-doc-estado" class="text-emerald-700">APROBADO</strong>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg border space-y-1 text-right text-xs">
+                            <div class="flex justify-between text-slate-500 font-semibold">
+                                <span>Subtotal:</span>
+                                <span id="wysiwyg-doc-subtotal" class="font-mono">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-slate-500 font-semibold">
+                                <span>Descuento (<span id="wysiwyg-doc-desc-pct">0</span>%):</span>
+                                <span id="wysiwyg-doc-desc-monto" class="font-mono text-red-600">-$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm font-black text-slate-900 border-t pt-1 mt-1">
+                                <span>TOTAL NETO:</span>
+                                <span id="wysiwyg-doc-total" class="font-mono text-indigo-700">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ESTADO FINANCIERO Y SECCIÓN DE COBRO / PAGO DIRECTO EN CUENTA CORRIENTE -->
+                    <div id="wysiwyg-seccion-cc" class="bg-amber-50/80 p-4 rounded-xl border border-amber-200 space-y-3 hidden">
+                        <div class="flex justify-between items-center border-b border-amber-200 pb-2 flex-wrap gap-2">
+                            <span class="font-extrabold text-amber-900 text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-scale-unbalanced text-amber-600"></i> Estado Financiero en Cuenta Corriente:
+                            </span>
+                            <span id="wysiwyg-cc-badge-estado" class="px-2.5 py-0.5 rounded-full text-[10px] font-black border bg-red-100 text-red-700 border-red-300">
+                                🔴 IMPAGO
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+                            <div class="bg-white p-2 rounded border border-amber-200">
+                                <span class="block text-[9px] text-slate-400 font-sans font-bold uppercase">Total Doc</span>
+                                <strong id="wysiwyg-cc-val-total" class="text-slate-800">$0.00</strong>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-amber-200">
+                                <span class="block text-[9px] text-slate-400 font-sans font-bold uppercase">Abonado</span>
+                                <strong id="wysiwyg-cc-val-abonado" class="text-emerald-700">$0.00</strong>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-amber-200">
+                                <span class="block text-[9px] text-slate-400 font-sans font-bold uppercase">Saldo Deuda</span>
+                                <strong id="wysiwyg-cc-val-pendiente" class="text-red-600 font-black">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <!-- FORMULARIO DE COBRO / PAGO A CUENTA DIRECTO -->
+                        <div id="wysiwyg-cc-form-abono" class="space-y-3 pt-2 border-t border-amber-200">
+                            <p class="text-[11px] font-bold text-amber-900"> Registrar Abono / Pago a Cuenta Directo sobre este Comprobante:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-amber-800 mb-0.5">Monto a Rendir ($)</label>
+                                    <div class="flex gap-1">
+                                        <input type="number" id="wysiwyg-cc-input-monto" step="0.01" placeholder="0.00" class="w-full border rounded p-1.5 text-xs text-center font-bold bg-white text-slate-800 focus:ring-1 focus:ring-amber-500">
+                                        <button type="button" onclick="wysiwygAutofillTotalDeuda()" class="bg-amber-200 hover:bg-amber-300 text-amber-900 font-black text-[9px] px-1.5 rounded transition shadow-sm" title="Abonar el Saldo Total">Total</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-amber-800 mb-0.5">Medio de Pago</label>
+                                    <select id="wysiwyg-cc-input-medio" class="w-full border rounded p-1.5 text-xs bg-white font-bold text-slate-800 cursor-pointer">
+                                        <option value="efectivo" selected>💵 Efectivo</option>
+                                        <option value="transferencia">📱 Transferencia / QR</option>
+                                        <option value="tarjeta">💳 Tarjeta Débito/Crédito</option>
+                                        <option value="cheque">📄 Cheque Terceros/Propio</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end">
+                                    <button type="button" onclick="ejecutarPagoDirectoWYSIWYG()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-1.5 px-2 rounded text-xs transition shadow flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-circle-dollar-to-slot"></i> <span>Acreditar Pago</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES INFERIORES DE ACCIÓN -->
+            <div class="flex flex-wrap gap-2 justify-end pt-4 border-t mt-4 no-print">
+                <button onclick="imprimirModalWYSIWYG()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-print"></i> <span>Imprimir / PDF</span>
+                </button>
+                <button onclick="cerrarModalVerComprobanteWYSIWYG()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col space-y-2 no-print"></div>
+
+    <!-- CONFIGURACIONES INYECTADAS DESDE EL SERVIDOR -->
+    <script>
+        const SESION_INICIAL = {% if sesion %}{{ sesion|tojson }}{% else %}null{% endif %};
+        const CONFIG_INICIAL_MODULOS = {
+            stock: {% if config.modulos_activos.stock %}true{% else %}false{% endif %},
+            ventas: {% if config.modulos_activos.ventas %}true{% else %}false{% endif %},
+            compras: {% if config.modulos_activos.compras %}true{% else %}false{% endif %},
+            cc_clientes: {% if config.modulos_activos.cc_clientes %}true{% else %}false{% endif %},
+            cc_proveedores: {% if config.modulos_activos.cc_proveedores %}true{% else %}false{% endif %},
+            informes: {% if config.modulos_activos.informes %}true{% else %}false{% endif %},
+            pagos: {% if config.modulos_activos.pagos %}true{% else %}false{% endif %},
+            carrito: {% if config.modulos_activos.carrito %}true{% else %}false{% endif %}
+        };
+    </script>
+
+    <!-- ARCHIVOS JS ESTÁTICOS DESACOPLADOS -->
+    <script src="/static/js/main.js?v=2.0.31"></script>
+    <!-- START_MODULE: stock -->
+    {% if config.modulos_activos.stock %}
+    <script src="/static/js/stock.js?v=2.0.31"></script>
+    {% endif %}
+    <!-- END_MODULE: stock -->
+    <!-- START_MODULE: carrito -->
+    {% if config.modulos_activos.carrito %}
+    <script src="/static/js/cart.js?v=2.0.31"></script>
+    {% endif %}
+    <!-- END_MODULE: carrito -->
+    <!-- START_MODULE: pagos -->
+    {% if config.modulos_activos.pagos %}
+    <script src="/static/js/payments.js?v=2.0.31"></script>
+    {% endif %}
+    <!-- END_MODULE: pagos -->
+    <!-- START_MODULE: informes -->
+    {% if config.modulos_activos.informes %}
+    <script src="/static/js/reports.js?v=2.0.31"></script>
+    {% endif %}
+    <!-- END_MODULE: informes -->
+    <!-- START_MODULE: master -->
+    <script src="/static/js/master.js?v=2.0.31"></script>
+    <!-- END_MODULE: master -->
+</body>
+</html>

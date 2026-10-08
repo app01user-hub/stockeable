@@ -1,0 +1,20 @@
+{
+    "CLI-001": {
+        "id": "CLI-001",
+        "nombre": "Consumidor Final",
+        "telefono": "-",
+        "email": "-"
+    },
+    "CLI-002": {
+        "id": "CLI-002",
+        "nombre": "Ferretería Centro S.A.",
+        "telefono": "4555-1234",
+        "email": "contacto@ferreteriacentro.com"
+    },
+    "CLI-003": {
+        "id": "CLI-003",
+        "nombre": "Despensa Doña Rosa",
+        "telefono": "4999-5678",
+        "email": "rosa@despensa.com"
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "nombre_negocio": "Construcción de Negocios",
+    "tema_color": "indigo",
+    "logo_emoji": "🛠️",
+    "logo_url": "yosoycayne@gmailcom",
+    "subtitulo_negocio": "Distribuidor Comercial Multi-Rubro Modular",
+    "domicilio_negocio": "Domicilio Comercial de Práctica 123 • Buenos Aires • CUIT 30-12345678-9",
+    "gmail_user": "",
+    "gmail_app_password": "",
+    "modulos_activos": {
+        "stock": true,
+        "ventas": true,
+        "compras": true,
+        "cc_clientes": true,
+        "cc_proveedores": true,
+        "informes": true,
+        "pagos": true,
+        "carrito": true,
+        "caja": true,
+        "master": true
+    }
+}

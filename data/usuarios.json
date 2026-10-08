@@ -1,0 +1,27 @@
+{
+    "superadmin": {
+        "username": "superadmin",
+        "password": "superadmin123",
+        "role": "superadmin",
+        "nombre": "Desarrollador Master"
+    },
+    "admin": {
+        "username": "admin",
+        "password": "admin123",
+        "role": "admin",
+        "nombre": "Director General"
+    },
+    "vendedor": {
+        "username": "vendedor",
+        "password": "vendedor123",
+        "role": "vendedor",
+        "nombre": "Vendedor de Salón"
+    },
+    "cliente1": {
+        "username": "cliente1",
+        "password": "cliente123",
+        "role": "cliente",
+        "nombre": "Ferretería Centro S.A.",
+        "cliente_id": "CLI-002"
+    }
+}
